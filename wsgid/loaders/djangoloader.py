@@ -1,6 +1,5 @@
 
 
-
 from wsgid.loaders import IAppLoader
 from wsgid.core import Plugin, get_main_logger
 try:
@@ -27,7 +26,7 @@ class DjangoAppLoader(Plugin):
     dirs = self._valid_dirs(app_path)
     log.debug("{0} Possible valid djangoapp folders: {1}".format(len(dirs), dirs))
     for d in dirs:
-      settings_path = os.path.join(app_path, d, 'settings.py')
+      settings_path = os.path.join(app_path, d, 'settings')
       init_path = os.path.join(app_path, d, '__init__.py')
       if os.path.exists(settings_path) and os.path.exists(init_path):
         return d
