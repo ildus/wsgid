@@ -1,5 +1,4 @@
 
-
 from wsgid.loaders import IAppLoader
 from wsgid.core import Plugin, get_main_logger
 try:
@@ -52,8 +51,6 @@ class DjangoAppLoader(Plugin):
     # because django.json lives in --app-path
     wsgidapp_path = os.path.dirname(app_path)
 
-    extra = self._load_django_extra_options(wsgidapp_path)
-
     site_name = self._first_djangoproject_dir(app_path)
     os.environ['DJANGO_SETTINGS_MODULE'] = '{0}.settings'.format(site_name)
     logger.debug("Using DJANGO_SETTINGS_MODULE = {0}".format(os.environ['DJANGO_SETTINGS_MODULE']))
@@ -64,27 +61,6 @@ class DjangoAppLoader(Plugin):
     sys.path.append(app_path)
     logger.debug("Adding {0} to sys.path".format(new_syspath))
     sys.path.append(new_syspath)
-
-    # Here we force django to load the app settings
-    settings._some_value = True
-    # Clean up
-    del settings._some_value
-
-    for k,v in extra.items():
-        setting_value = None
-        if hasattr(settings, k):
-            setting_value = getattr(settings, k)
-
-        if isinstance(v, dict) and setting_value and isinstance(setting_value, dict):
-            for k2, v2 in v.items():
-                getattr(settings, k)[k2] = v2
-        elif isinstance(v, list) and setting_value and isinstance(setting_value, list):
-            setting_value += v
-        elif isinstance(v, list) and setting_value and isinstance(setting_value, tuple):
-            #Since we cannot modify the original tuple, we must re-create it
-            setattr(settings, k, setting_value + tuple(v))
-        else:
-            setattr(settings, k, v)
 
     import django.core.handlers.wsgi
     return django.core.handlers.wsgi.WSGIHandler()
