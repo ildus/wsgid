@@ -120,7 +120,7 @@ class Wsgid(object):
    reveived from mongrel2.
    @json_headers should be an already parsed JSON string
   '''
-  def _create_wsgi_environ(self, json_headers, body=None):
+  def _create_wsgi_environ(self, json_headers, body=None):    
     environ = {}
     #Not needed
     json_headers.pop('URI', None)
@@ -142,11 +142,11 @@ class Wsgid(object):
 
     self._set(environ, 'REQUEST_METHOD', json_headers.pop('METHOD'))
     self._set(environ, 'SERVER_PROTOCOL', json_headers.pop('VERSION'))
-    self._set(environ, 'SCRIPT_NAME', json_headers.pop('PATTERN').rstrip('/'))
+    self._set(environ, 'SCRIPT_NAME', '')
     self._set(environ, 'QUERY_STRING', json_headers.pop('QUERY', ""))
 
-    script_name = environ['SCRIPT_NAME']
-    path_info = json_headers.pop('PATH')[len(script_name):]
+    script_name = json_headers.pop('PATTERN').rstrip('/')
+    path_info = json_headers.pop('PATH')#[len(script_name):]
     self._set(environ, 'PATH_INFO', urllib.unquote(path_info))
 
     server_port = '80'
